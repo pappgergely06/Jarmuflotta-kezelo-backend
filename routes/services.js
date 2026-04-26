@@ -5,7 +5,7 @@ const { verifyToken } = require('../middleware/auth');
 
 router.get('/', verifyToken, async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT * FROM services');
+        const rows = await db.query('SELECT * FROM services');
         res.json(rows);
     } catch (err) {
         console.error(err);
@@ -15,7 +15,7 @@ router.get('/', verifyToken, async (req, res) => {
 
 router.get('/:id', verifyToken, async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT * FROM services WHERE service_id = ?', [req.params.id]);
+        const rows = await db.query('SELECT * FROM services WHERE service_id = ?', [req.params.id]);
         if (rows.length === 0) return res.status(404).send("Szerviz nem található");
         res.json(rows[0]);
     } catch (err) {
@@ -24,10 +24,21 @@ router.get('/:id', verifyToken, async (req, res) => {
     }
 });
 
+router.get('/vehicle/:id', verifyToken, async (req, res) => {
+	try {
+		const rows = await db.query('SELECT * FROM services WHERE vehicle_id = ?', [req.params.id]);
+		if (rows.length === 0) return res.status(404).send("Szervíz nem található");
+		res.json(rows);
+	} catch (err) {
+		console.error(err);
+		res.status(500).send("Hiba a szervíz lekérdezésekor");
+	}
+});
+
 router.post('/', verifyToken, async (req, res) => {
     try {
         const { date, type, next_service, vehicle_id } = req.body;
-        const [result] = await db.query(
+        const result = await db.query(
             'INSERT INTO services (date, type, next_service, vehicle_id) VALUES (?, ?, ?, ?)',
             [date, type, next_service, vehicle_id]
         );
@@ -41,7 +52,7 @@ router.post('/', verifyToken, async (req, res) => {
 router.put('/:id', verifyToken, async (req, res) => {
     try {
         const { date, type, next_service, vehicle_id } = req.body;
-        const [result] = await db.query(
+        const result = await db.query(
             'UPDATE services SET date=?, type=?, next_service=?, vehicle_id=? WHERE service_id=?',
             [date, type, next_service, vehicle_id, req.params.id]
         );
@@ -55,7 +66,7 @@ router.put('/:id', verifyToken, async (req, res) => {
 
 router.delete('/:id', verifyToken, async (req, res) => {
     try {
-        const [result] = await db.query('DELETE FROM services WHERE service_id = ?', [req.params.id]);
+        const result = await db.query('DELETE FROM services WHERE service_id = ?', [req.params.id]);
         if (result.affectedRows === 0) return res.status(404).send("Szerviz nem található");
         res.json({ message: "Szerviz bejegyzés sikeresen törölve" });
     } catch (err) {

@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-
+require('dotenv').config;
 const authRoutes = require('./routes/auth');
 const vehiclesRoutes = require('./routes/vehicles');
 const driversRoutes = require('./routes/drivers');
@@ -13,6 +13,9 @@ const usersRoutes = require('./routes/users');
 
 const app = express();
 
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+
 BigInt.prototype.toJSON = function() {
     return this.toString();
 }
@@ -20,6 +23,9 @@ BigInt.prototype.toJSON = function() {
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+PORT = process.env.PORT || 5001;
 
 app.use('/api/auth', authRoutes);
 app.use('/api/vehicles', vehiclesRoutes);
@@ -31,4 +37,6 @@ app.use('/api/services', servicesRoutes);
 app.use('/api/services-list', servicesListRoutes);
 app.use('/api/users', usersRoutes);
 
-module.exports = app;
+app.listen(PORT, async () => {
+    console.log(`A szerver fut az ${PORT} porton!`);
+})

@@ -5,7 +5,7 @@ const { verifyToken } = require('../middleware/auth');
 
 router.get('/', verifyToken, async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT user_id, username, role FROM users');
+        const rows = await db.query('SELECT user_id, username, role FROM users');
         res.json(rows);
     } catch (err) {
         console.error(err);
@@ -15,7 +15,7 @@ router.get('/', verifyToken, async (req, res) => {
 
 router.get('/:id', verifyToken, async (req, res) => {
     try {
-        const [rows] = await db.query('SELECT user_id, username, role FROM users WHERE user_id = ?', [req.params.id]);
+        const rows = await db.query('SELECT user_id, username, role FROM users WHERE user_id = ?', [req.params.id]);
         if (rows.length === 0) return res.status(404).send("Felhasználó nem található");
         res.json(rows[0]);
     } catch (err) {
@@ -27,7 +27,7 @@ router.get('/:id', verifyToken, async (req, res) => {
 router.put('/:id', verifyToken, async (req, res) => {
     try {
         const { username, role } = req.body;
-        const [result] = await db.query(
+        const result = await db.query(
             'UPDATE users SET username=?, role=? WHERE user_id=?',
             [username, role, req.params.id]
         );
@@ -41,7 +41,7 @@ router.put('/:id', verifyToken, async (req, res) => {
 
 router.delete('/:id', verifyToken, async (req, res) => {
     try {
-        const [result] = await db.query('DELETE FROM users WHERE user_id = ?', [req.params.id]);
+        const result = await db.query('DELETE FROM users WHERE user_id = ?', [req.params.id]);
         if (result.affectedRows === 0) return res.status(404).send("Felhasználó nem található");
         res.json({ message: "Felhasználó sikeresen törölve" });
     } catch (err) {

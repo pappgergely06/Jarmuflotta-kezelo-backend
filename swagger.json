@@ -1,0 +1,431 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Flottakezelő API",
+      "version": "1.0.0",
+      "description": "API dokumentáció a Járműflotta-kezelő backendhez."
+    },
+    "servers": [
+      {
+        "url": "https://flotta.vbdev.hu/api/",
+        "description": "VB. VPS"
+      }
+    ],
+    "components": {
+      "securitySchemes": {
+        "bearerAuth": {
+          "type": "http",
+          "scheme": "bearer",
+          "bearerFormat": "JWT"
+        }
+      }
+    },
+    "security": [
+      {
+        "bearerAuth": []
+      }
+    ],
+    "paths": {
+      "/api/auth/register": {
+        "post": {
+          "tags": ["Auth"],
+          "summary": "Új felhasználó regisztrációja",
+          "security": [],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": { "type": "string", "example": "admin_user" },
+                    "password": { "type": "string", "example": "admin_secret_123" },
+                    "role": { "type": "string", "example": "admin" }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "201": { "description": "Sikeres regisztráció" }
+          }
+        }
+      },
+      "/api/auth/login": {
+        "post": {
+          "tags": ["Auth"],
+          "summary": "Felhasználó bejelentkezése",
+          "security": [],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "username": { "type": "string", "example": "admin_user" },
+                    "password": { "type": "string", "example": "admin_secret_123" }
+                  }
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": { "description": "Sikeres bejelentkezés" }
+          }
+        }
+      },
+      "/api/auth/profile": {
+        "get": {
+          "tags": ["Auth"],
+          "summary": "Bejelentkezett profil adatai",
+          "responses": {
+            "200": { "description": "Profil adatok" }
+          }
+        }
+      },
+      "/api/vehicles": {
+        "get": {
+          "tags": ["Vehicles"],
+          "summary": "Összes jármű lekérdezése",
+          "responses": { "200": { "description": "Járművek listája" } }
+        },
+        "post": {
+          "tags": ["Vehicles"],
+          "summary": "Új jármű hozzáadása",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "created_at": { "type": "string", "format": "date" },
+                    "next_technical_exam": { "type": "string", "format": "date" },
+                    "year": { "type": "string" },
+                    "model": { "type": "string" },
+                    "brand": { "type": "string" },
+                    "vin": { "type": "string" },
+                    "start_odometer": { "type": "integer" },
+                    "insurance_expiry": { "type": "string", "format": "date" },
+                    "lisence_plate": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "responses": { "201": { "description": "Sikeres létrehozás" } }
+        }
+      },
+      "/api/vehicles/{id}": {
+        "get": {
+          "tags": ["Vehicles"],
+          "summary": "Jármű lekérdezése ID alapján",
+          "parameters": [
+            { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+          ],
+          "responses": { "200": { "description": "Jármű adatai" } }
+        },
+        "put": {
+          "tags": ["Vehicles"],
+          "summary": "Jármű módosítása",
+          "parameters": [
+            { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "created_at": { "type": "string", "format": "date" },
+                    "next_technical_exam": { "type": "string", "format": "date" },
+                    "year": { "type": "string" },
+                    "model": { "type": "string" },
+                    "brand": { "type": "string" },
+                    "vin": { "type": "string" },
+                    "start_odometer": { "type": "integer" },
+                    "insurance_expiry": { "type": "string", "format": "date" },
+                    "lisence_plate": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "responses": { "200": { "description": "Sikeres módosítás" } }
+        },
+        "delete": {
+          "tags": ["Vehicles"],
+          "summary": "Jármű törlése",
+          "parameters": [
+            { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+          ],
+          "responses": { "200": { "description": "Sikeres törlés" } }
+        }
+      },
+	"/api/vehicles/updateOdo/{id}": {
+		"put": {
+			"tags": ["Vehicles"],
+			"summary": "Jármű kilométer órájának módosítása",
+			"parameters": [
+				{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+			],
+			"requestBody": {
+				"required": true,
+				"content": {
+					"application/json": {
+						"schema": {
+							"type": "object",
+							"properties": {
+								"start_odometer": { "type": "integer" }
+							}
+						}
+					}
+				}
+			}
+		}
+	},
+      "/api/drivers": {
+        "get": {
+          "tags": ["Drivers"],
+          "summary": "Összes sofőr lekérdezése",
+          "responses": { "200": { "description": "Sofőrök listája" } }
+        },
+        "post": {
+          "tags": ["Drivers"],
+          "summary": "Új sofőr hozzáadása",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "license_number": { "type": "string" },
+                    "address": { "type": "string" },
+                    "email": { "type": "string" },
+                    "phone": { "type": "string" },
+                    "name": { "type": "string" },
+                    "starting_date": { "type": "string", "format": "date" },
+                    "user_id": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          },
+          "responses": { "201": { "description": "Sikeres létrehozás" } }
+        }
+      },
+      "/api/drivers/{id}": {
+        "get": {
+          "tags": ["Drivers"],
+          "summary": "Sofőr lekérdezése ID alapján",
+          "parameters": [
+            { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+          ],
+          "responses": { "200": { "description": "Sofőr adatai" } }
+        },
+        "put": {
+          "tags": ["Drivers"],
+          "summary": "Sofőr módosítása",
+          "parameters": [
+            { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+          ],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "license_number": { "type": "string" },
+                    "address": { "type": "string" },
+                    "email": { "type": "string" },
+                    "phone": { "type": "string" },
+                    "name": { "type": "string" },
+                    "starting_date": { "type": "string", "format": "date" },
+                    "user_id": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          },
+          "responses": { "200": { "description": "Sikeres módosítás" } }
+        },
+        "delete": {
+          "tags": ["Drivers"],
+          "summary": "Sofőr törlése",
+          "parameters": [
+            { "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }
+          ],
+          "responses": { "200": { "description": "Sikeres törlés" } }
+        }
+      },
+      "/api/driver-assignments": {
+        "get": {
+          "tags": ["Driver Assignments"],
+          "summary": "Összes hozzárendelés lekérdezése",
+          "responses": { "200": { "description": "Hozzárendelések" } }
+        },
+        "post": {
+          "tags": ["Driver Assignments"],
+          "summary": "Új hozzárendelés",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "assigned_from": { "type": "string", "format": "date" },
+                    "assigned_to": { "type": "string", "format": "date" },
+                    "vehicle_id": { "type": "integer" },
+                    "driver_id": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          },
+          "responses": { "201": { "description": "Sikeres létrehozás" } }
+        }
+      },
+      "/api/driver-assignments/{id}": {
+        "get": {
+          "tags": ["Driver Assignments"],
+          "summary": "Hozzárendelés lekérdezése",
+          "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }],
+          "responses": { "200": { "description": "Siker" } }
+        },
+        "put": {
+          "tags": ["Driver Assignments"],
+          "summary": "Hozzárendelés módosítás",
+          "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }],
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "assigned_from": { "type": "string", "format": "date" },
+                    "assigned_to": { "type": "string", "format": "date" },
+                    "vehicle_id": { "type": "integer" },
+                    "driver_id": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          },
+          "responses": { "200": { "description": "Sikeres módosítás" } }
+        },
+        "delete": {
+          "tags": ["Driver Assignments"],
+          "summary": "Hozzárendelés törlése",
+          "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }],
+          "responses": { "200": { "description": "Törölve" } }
+        }
+     	},
+	"/api/driver-assignments/driver/{driver_id}": {
+		"get": {
+			"tags": ["Driver Assignments"],
+			"summary": "Hozzárendelés lekérdezése sofőr alapján",
+			"parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }],
+			"responses": { "200": { "description": "Siker" } }
+		}
+	},
+      "/api/travel-logs": {
+        "get": { "tags": ["Travel Logs"], "summary": "Útinaplók lekérdezése", "responses": { "200": { "description": "Siker" } } },
+        "post": {
+          "tags": ["Travel Logs"],
+          "summary": "Új útinapló",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "date": { "type": "string", "format": "date" },
+                    "start_km": { "type": "integer" },
+                    "end_km": { "type": "integer" },
+                    "vehicle_id": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          },
+          "responses": { "201": { "description": "Létrehozva" } }
+        }
+      },
+      "/api/travel-logs/{id}": {
+        "get": {
+          "tags": ["Travel Logs"], "summary": "Lekérdezés", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Siker" } }
+        },
+        "put": {
+          "tags": ["Travel Logs"], "summary": "Módosítás", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }],
+          "requestBody": {
+            "required": true,
+            "content": {"application/json": { "schema": { "type": "object", "properties": { "date": { "type": "string", "format": "date" }, "start_km": { "type": "integer" }, "end_km": { "type": "integer" }, "vehicle_id": { "type": "integer" } } } } }
+          },
+          "responses": { "200": { "description": "Siker" } }
+        },
+        "delete": {
+          "tags": ["Travel Logs"], "summary": "Törlés", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Siker" } }
+        }
+      },
+	"/api/travel-logs/vehicle/{id}": {
+		"get": {
+			"tags": ["Travel Logs"], "summary": "Lekérdezés vehicle_id alapján", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Siker" } }
+		}
+	},
+      "/api/fuelings": {
+        "get": { "tags": ["Fuelings"], "summary": "Tankolások", "responses": { "200": { "description": "Siker" } } },
+        "post": {
+          "tags": ["Fuelings"], "summary": "Új tankolás", "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "date": { "type": "string", "format": "date" }, "amount_liters": { "type": "number" }, "price_per_liter": { "type": "number" }, "vehicle_id": { "type": "integer" } } } } } }, "responses": { "201": { "description": "Létrehozva" } }
+        }
+      },
+      "/api/fuelings/{id}": {
+        "get": { "tags": ["Fuelings"], "summary": "Egy tankolás", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Siker" } } },
+        "put": {
+          "tags": ["Fuelings"], "summary": "Módosítás", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }],
+          "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "date": { "type": "string", "format": "date" }, "amount_liters": { "type": "number" }, "price_per_liter": { "type": "number" }, "vehicle_id": { "type": "integer" } } } } } }, "responses": { "200": { "description": "Siker" } }
+        },
+        "delete": { "tags": ["Fuelings"], "summary": "Törlés", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Siker" } } }
+      },
+	"/api/fuelings/vehicle/{id}": {
+		"get": { "tags": ["Fuelings"], "summary": "Tankolások lekérdezése autó alapján", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Siker" } } }
+	},
+      "/api/services": {
+        "get": { "tags": ["Services"], "summary": "Szervizek", "responses": { "200": { "description": "Siker" } } },
+        "post": {
+          "tags": ["Services"], "summary": "Új szerviz", "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "date": { "type": "string", "format": "date" }, "type": { "type": "string" }, "next_service": { "type": "string", "format": "date" }, "vehicle_id": { "type": "integer" } } } } } }, "responses": { "201": { "description": "Létrehozva" } }
+        }
+      },
+      "/api/services/{id}": {
+        "get": { "tags": ["Services"], "summary": "Egy szerviz", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Siker" } } },
+        "put": { "tags": ["Services"], "summary": "Módosítás", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "date": { "type": "string", "format": "date" }, "type": { "type": "string" }, "next_service": { "type": "string", "format": "date" }, "vehicle_id": { "type": "integer" } } } } } }, "responses": { "200": { "description": "Siker" } } },
+        "delete": { "tags": ["Services"], "summary": "Törlés", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Siker" } } }
+      },
+	"/api/services/vehicle/{id}": {
+		"get": { "tags": ["Services"], "summary": "Szervízek lekérdezése autó alapján", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Siker" } } }
+	},
+      "/api/services-list": {
+        "get": { "tags": ["Services List"], "summary": "Lista elem", "responses": { "200": { "description": "Siker" } } },
+        "post": { "tags": ["Services List"], "summary": "Új lista elem", "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "name": { "type": "string" }, "cost": { "type": "number" }, "service_id": { "type": "integer" } } } } } }, "responses": { "201": { "description": "Létrehozva" } } }
+      },
+      "/api/services-list/{id}": {
+        "get": { "tags": ["Services List"], "summary": "Egy elem", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Siker" } } },
+        "put": { "tags": ["Services List"], "summary": "Módosítás", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "name": { "type": "string" }, "cost": { "type": "number" }, "service_id": { "type": "integer" } } } } } }, "responses": { "200": { "description": "Siker" } } },
+        "delete": { "tags": ["Services List"], "summary": "Törlés", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Siker" } } }
+      },
+      "/api/users": {
+        "get": { "tags": ["Users"], "summary": "Összes user", "responses": { "200": { "description": "Siker" } } }
+      },
+      "/api/users/{id}": {
+        "get": { "tags": ["Users"], "summary": "Egy user", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Siker" } } },
+        "put": { "tags": ["Users"], "summary": "Módosítás", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }], "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "properties": { "username": { "type": "string" }, "role": { "type": "string" } } } } } }, "responses": { "200": { "description": "Siker" } } },
+        "delete": { "tags": ["Users"], "summary": "Törlés", "parameters": [{ "in": "path", "name": "id", "required": true, "schema": { "type": "integer" } }], "responses": { "200": { "description": "Siker" } } }
+      }
+    }
+  }
